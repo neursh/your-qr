@@ -1,3 +1,6 @@
+# Kewar
+<sup>Yes, it's QR, but written as how it sounds</sup>
+
 i'm just so sick of the current qr generating methods for non-tech people out there, all of the the qr code generating sites goes through themselves first to a trash, full of ads (rhyme intended) sits in between yea why not let's waste these people time and data.
 
 ## Privacy concerns
