@@ -39,6 +39,6 @@ You can split Kewar web off, running it without server and it will work just fin
 You can split Kewar server off, running it without web client and it will allow you to make other stuff related to QR over REST API.
 
 ## Plans
-If this project managed to raised enough donations to not lose my lunch money running this thing, I'll consider getting a Pi as a proxy that will allows people to change their destination without changing the QR code. Open source too.
+If this project managed to raised enough donations to not lose my lunch money running this thing, I'll consider getting a Pi 5 to run the server.
 
-Since the Pi is not capable of handling much stuff, it would still goes through Cloudflare cache to ensure that it won't get hit as many, so you'll see some delay when changing your url, I also planned lots of cool features if setting up a server is possible!
+Since the Pi is not capable of handling much stuff, it would still goes through Cloudflare cache to ensure that it won't get hit as many. If the donations is stable enough, I'll change the host onto a VPS provider.
