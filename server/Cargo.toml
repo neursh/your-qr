@@ -1,6 +1,9 @@
 [package]
 name = "kewar-server"
 version = "0.1.0"
+description = "A server implementation for Kewar!"
+license = "GPL-3.0"
+repository = "https://github.com/neursh/kew-ar"
 edition = "2024"
 
 [dependencies]
