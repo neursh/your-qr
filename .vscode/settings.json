@@ -12,7 +12,6 @@
   "[rust]": {
     "editor.formatOnPaste": true,
     "editor.formatOnSave": true,
-    "editor.defaultFormatter": "jinxdash.prettier-rust",
-    "editor.tabSize": 4
+    "editor.defaultFormatter": "jinxdash.prettier-rust"
   }
 }
