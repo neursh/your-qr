@@ -1788,6 +1788,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.22"
     globals: "npm:^16.4.0"
     motion: "npm:^12.23.24"
+    qrgen_wasm: ../qrgen/pkg
     react: "npm:^19.1.1"
     react-dom: "npm:^19.1.1"
     react-router-dom: "npm:^7.9.5"
@@ -2336,6 +2337,13 @@ __metadata:
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10c0/14f76a8206bc3464f794fb2e3d3cc665ae416c01893ad7a02b23766eb07159144ee612ad67af5e84fa4479ccfe67678c4feb126b0485651b302babf66f04f9e9
+  languageName: node
+  linkType: hard
+
+"qrgen_wasm@file:../qrgen/pkg::locator=kewar-web%40workspace%3A.":
+  version: 0.1.0
+  resolution: "qrgen_wasm@file:../qrgen/pkg#../qrgen/pkg::hash=b0db44&locator=kewar-web%40workspace%3A."
+  checksum: 10c0/ba0e4db39c17be61ef3be74ae5600b573925c16c1dc53258753edadfb920b10674982d33a8f719cc998766fa3360c05efa4bc96f0ca513df46f84338d6ab3da3
   languageName: node
   linkType: hard
 
