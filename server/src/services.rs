@@ -4,7 +4,7 @@ use crate::services::{ self, verify_pass::VerifyPassRequest };
 
 pub mod hash_pass;
 pub mod structs;
-mod verify_pass;
+pub mod verify_pass;
 
 // Tuple (thread amount, channel's buffer)
 pub struct WorkerSpecs {
