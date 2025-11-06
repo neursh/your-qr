@@ -3,12 +3,7 @@ use std::sync::Arc;
 use argon2::{ Argon2, password_hash::{ PasswordHasher, SaltString, rand_core::OsRng } };
 use tokio::sync::{ Mutex, mpsc, oneshot };
 
-pub struct HashPassRequest {
-  pub password: String,
-  pub response: oneshot::Sender<Option<String>>,
-}
-
-pub fn launch(rx: mpsc::Receiver<HashPassRequest>, amount: usize) {
+pub fn launch(rx: mpsc::Receiver<(String, oneshot::Sender<Option<String>>)>, amount: usize) {
   let rx_wraped = Arc::new(Mutex::new(rx));
 
   for _ in 0..amount {
@@ -17,18 +12,18 @@ pub fn launch(rx: mpsc::Receiver<HashPassRequest>, amount: usize) {
   }
 }
 
-fn worker(rx: Arc<Mutex<mpsc::Receiver<HashPassRequest>>>) {
+fn worker(rx: Arc<Mutex<mpsc::Receiver<(String, oneshot::Sender<Option<String>>)>>>) {
   let argon2 = Argon2::default();
   loop {
     let retrieve = { rx.blocking_lock().blocking_recv() };
     if let Some(request) = retrieve {
       let salt = SaltString::generate(&mut OsRng);
-      match argon2.hash_password(request.password.as_bytes(), &salt) {
+      match argon2.hash_password(request.0.as_bytes(), &salt) {
         Ok(hashed) => {
-          let _ = request.response.send(Some(hashed.to_string()));
+          let _ = request.1.send(Some(hashed.to_string()));
         }
         Err(_) => {
-          let _ = request.response.send(None);
+          let _ = request.1.send(None);
         }
       }
     } else {
