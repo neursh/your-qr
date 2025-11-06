@@ -17,31 +17,46 @@ function build_qrgen() {
   fi
 
   echo \[BUILD\] Moving wasm build to web\'s /public directory...
-  mkdir -p ../web/public/qrgen && mv pkg/qrgen_wasm_bg.wasm ../web/public/qrgen
+  mkdir -p ../web/public/qrgen & mv pkg/qrgen_wasm_bg.wasm ../web/public/qrgen
   move_status=$?
 
   if [ $move_status -eq 1 ]; then
     echo "Configure qrgen failed."
     exit 1
   fi
+
+  echo \[BUILD\] Checking yarn on web...
+  cd ../web
+  yarn
+  yarn_status=$?
+
+  if [ $yarn_status -eq 1 ]; then
+    echo "Configure qrgen failed."
+    exit 1
+  fi
+
+  cd ..
 }
 
 function build_server() {
   echo \[BUILD\] Building server...
-  cd ../server
+  cd server
   if ! cargo build --release; then
     echo "Build server failed."
     exit 1
   fi
+  cd ..
 }
 
 function build_web() {
   echo \[BUILD\] Building web...
-  cd ../web
-  if ! yarn & yarn build; then
+  cd web
+  if ! yarn build; then
     echo "Build web failed."
     exit 1
   fi
+
+  cd ..
 }
 
 if [ $1 == "qrgen" ]; then
