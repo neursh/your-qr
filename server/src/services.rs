@@ -6,6 +6,18 @@ pub mod hash_pass;
 pub mod structs;
 mod verify_pass;
 
+// Tuple (thread amount, channel's buffer)
+pub struct WorkerSpecs {
+  pub hash_pass: (usize, usize),
+  pub verify_pass: (usize, usize),
+}
+
+#[derive(Clone)]
+pub struct ServicesRequest {
+  pub hash_pass: RequestHandler<String, Option<String>>,
+  pub verify_pass: RequestHandler<VerifyPassRequest, Option<bool>>,
+}
+
 pub fn construct_services(specs: WorkerSpecs) -> ServicesRequest {
   let (hash_pass_tx, hash_pass_rx) = mpsc::channel::<(String, oneshot::Sender<Option<String>>)>(
     specs.hash_pass.1
@@ -23,23 +35,10 @@ pub fn construct_services(specs: WorkerSpecs) -> ServicesRequest {
   }
 }
 
-// Tuple (thread amount, channel's buffer)
-pub struct WorkerSpecs {
-  pub hash_pass: (usize, usize),
-  pub verify_pass: (usize, usize),
-}
-
-#[derive(Clone)]
-pub struct ServicesRequest {
-  pub hash_pass: RequestHandler<String, Option<String>>,
-  pub verify_pass: RequestHandler<VerifyPassRequest, Option<bool>>,
-}
-
 #[derive(Clone)]
 pub struct RequestHandler<R, P> {
   tx: mpsc::Sender<(R, oneshot::Sender<P>)>,
 }
-
 impl<R, P> RequestHandler<R, P> {
   pub async fn send(&self, request: R) -> Result<P, ()> {
     let (one_tx, one_rx) = oneshot::channel::<P>();
