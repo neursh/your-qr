@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# QRGen build artifact pushed to /public
+public/qrgen
