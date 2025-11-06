@@ -1,6 +1,6 @@
-use tokio::sync::{ mpsc, oneshot };
+use tokio::sync::{ mpsc::{ self, Receiver }, oneshot };
 
-use crate::services::{ self, verify_pass::VerifyPassRequest };
+use crate::services::verify_pass::VerifyPassRequest;
 
 pub mod hash_pass;
 pub mod structs;
@@ -19,19 +19,9 @@ pub struct ServicesRequest {
 }
 
 pub fn construct_services(specs: WorkerSpecs) -> ServicesRequest {
-  let (hash_pass_tx, hash_pass_rx) = mpsc::channel::<(String, oneshot::Sender<Option<String>>)>(
-    specs.hash_pass.1
-  );
-  services::hash_pass::launch(hash_pass_rx, specs.hash_pass.0);
-
-  let (verify_pass_tx, verify_pass_rx) = mpsc::channel::<
-    (VerifyPassRequest, oneshot::Sender<Option<bool>>)
-  >(specs.verify_pass.1);
-  services::verify_pass::launch(verify_pass_rx, specs.verify_pass.0);
-
   ServicesRequest {
-    hash_pass: RequestHandler { tx: hash_pass_tx },
-    verify_pass: RequestHandler { tx: verify_pass_tx },
+    hash_pass: RequestHandler::new(hash_pass::launch, specs.hash_pass.0, specs.hash_pass.1),
+    verify_pass: RequestHandler::new(verify_pass::launch, specs.verify_pass.0, specs.verify_pass.1),
   }
 }
 
@@ -40,6 +30,19 @@ pub struct RequestHandler<R, P> {
   tx: mpsc::Sender<(R, oneshot::Sender<P>)>,
 }
 impl<R, P> RequestHandler<R, P> {
+  pub fn new<F: Fn(Receiver<(R, oneshot::Sender<P>)>, usize)>(
+    launcher: F,
+    amount: usize,
+    buffer: usize
+  ) -> Self {
+    let (service_tx, service_rx) = mpsc::channel::<(R, oneshot::Sender<P>)>(buffer);
+    launcher(service_rx, amount);
+
+    RequestHandler {
+      tx: service_tx,
+    }
+  }
+
   pub async fn send(&self, request: R) -> Result<P, ()> {
     let (one_tx, one_rx) = oneshot::channel::<P>();
 
