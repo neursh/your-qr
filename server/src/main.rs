@@ -19,7 +19,7 @@ async fn main() {
     verify_pass: (4, 2048),
   });
 
-  let app = Router::new().nest("/users", routes::users::routes(services));
+  let app = Router::new().nest("/user", routes::user::routes(services));
 
   let listener = tokio::net::TcpListener::bind(host).await.unwrap();
   axum::serve(listener, app).await.unwrap();

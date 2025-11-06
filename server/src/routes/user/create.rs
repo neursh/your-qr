@@ -1,6 +1,6 @@
 use axum::{ Json, extract::State, http::StatusCode };
 
-use crate::{ routes::users::structs::CreateUserPayload, services::Services };
+use crate::{ routes::user::structs::CreateUserPayload, services::Services };
 
 pub async fn handle(
   State(services): State<Services>,
