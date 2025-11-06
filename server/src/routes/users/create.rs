@@ -1,9 +1,9 @@
 use axum::{ Json, extract::State, http::StatusCode };
 
-use crate::{ routes::users::structs::CreateUserPayload, services::ServicesRequest };
+use crate::{ routes::users::structs::CreateUserPayload, services::Services };
 
 pub async fn handle(
-  State(services): State<ServicesRequest>,
+  State(services): State<Services>,
   Json(payload): Json<CreateUserPayload>
 ) -> Result<(StatusCode, String), StatusCode> {
   if let Ok(Some(hashed)) = services.hash_pass.send(payload.password).await {

@@ -1,7 +1,7 @@
 use std::env;
 use axum::Router;
 
-use crate::services::{ WorkerSpecs, construct_services };
+use crate::services::{ Services, WorkerSpecs };
 
 mod routes;
 mod services;
@@ -11,7 +11,7 @@ async fn main() {
   let args: Vec<String> = env::args().collect();
   let host = &args[1];
 
-  let services = construct_services(WorkerSpecs {
+  let services = Services::new(WorkerSpecs {
     // Allocate a reasonable amount of workers for password services.
     // This be using 100% when full load on all workers.
     // Password hashing is heavy after all.
