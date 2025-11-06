@@ -1,0 +1,14 @@
+[package]
+name = "balancer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+async-trait = "0.1.89"
+env_logger = "0.11.8"
+log = "0.4.28"
+pingora = { version = "0.6.0", features = ["lb"] }
+pingora-core = "0.6.0"
+pingora-http = "0.6.0"
+pingora-load-balancing = "0.6.0"
+pingora-proxy = "0.6.0"
