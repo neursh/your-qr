@@ -3,11 +3,9 @@ use std::sync::Arc;
 use argon2::{ Argon2, password_hash::{ PasswordHasher, SaltString, rand_core::OsRng } };
 use tokio::sync::{ Mutex, mpsc, oneshot };
 
-use crate::services::structs::HashedPassword;
-
 pub struct HashPassRequest {
   pub password: String,
-  pub response: oneshot::Sender<Option<HashedPassword>>,
+  pub response: oneshot::Sender<Option<String>>,
 }
 
 pub fn launch(rx: mpsc::Receiver<HashPassRequest>, amount: usize) {
@@ -22,16 +20,12 @@ pub fn launch(rx: mpsc::Receiver<HashPassRequest>, amount: usize) {
 fn worker(rx: Arc<Mutex<mpsc::Receiver<HashPassRequest>>>) {
   let argon2 = Argon2::default();
   loop {
-    if let Some(request) = ({ rx.blocking_lock().blocking_recv() }) {
+    let retrieve = { rx.blocking_lock().blocking_recv() };
+    if let Some(request) = retrieve {
       let salt = SaltString::generate(&mut OsRng);
       match argon2.hash_password(request.password.as_bytes(), &salt) {
         Ok(hashed) => {
-          let _ = request.response.send(
-            Some(HashedPassword {
-              hashed: hashed.to_string(),
-              salt: salt.to_string(),
-            })
-          );
+          let _ = request.response.send(Some(hashed.to_string()));
         }
         Err(_) => {
           let _ = request.response.send(None);
