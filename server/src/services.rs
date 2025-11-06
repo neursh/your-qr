@@ -11,18 +11,18 @@ pub struct WorkerSpecs {
 }
 
 #[derive(Clone)]
-pub struct ServicesRequestChannel {
+pub struct ServicesRequest {
   pub hash_pass: mpsc::Sender<HashPassRequest>,
 }
 
-pub fn construct_services(specs: WorkerSpecs) -> ServicesRequestChannel {
+pub fn construct_services(specs: WorkerSpecs) -> ServicesRequest {
   let (hash_pass_tx, hash_pass_rx): (
     mpsc::Sender<HashPassRequest>,
     mpsc::Receiver<HashPassRequest>,
   ) = mpsc::channel::<HashPassRequest>(specs.hash_pass.1);
   services::hash_pass::launch(hash_pass_rx, specs.hash_pass.0);
 
-  ServicesRequestChannel {
+  ServicesRequest {
     hash_pass: hash_pass_tx,
   }
 }

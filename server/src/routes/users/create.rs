@@ -3,11 +3,11 @@ use tokio::sync::oneshot;
 
 use crate::{
   routes::users::structs::CreateUserPayload,
-  services::{ ServicesRequestChannel, hash_pass::HashPassRequest, structs::HashedPassword },
+  services::{ ServicesRequest, hash_pass::HashPassRequest, structs::HashedPassword },
 };
 
 pub async fn handle(
-  State(services): State<ServicesRequestChannel>,
+  State(services): State<ServicesRequest>,
   Json(payload): Json<CreateUserPayload>
 ) -> Result<(StatusCode, Json<HashedPassword>), StatusCode> {
   let (hash_tx, hash_rx) = oneshot::channel::<Option<HashedPassword>>();
