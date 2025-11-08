@@ -1,10 +1,21 @@
 use axum::{ Router, routing::post };
 
-use crate::services::Services;
+use crate::{ database::KewarCollections, services::Services };
 
 pub mod create;
+pub mod delete;
 pub mod structs;
 
-pub fn routes(services: Services) -> Router {
-  Router::new().route("/", post(create::handle)).with_state(services)
+#[derive(Clone)]
+pub struct RouteState {
+  pub services: Services,
+  pub kewar_collections: KewarCollections,
+}
+
+pub fn routes(services: Services, kewar_collections: KewarCollections) -> Router {
+  let state = RouteState {
+    services,
+    kewar_collections,
+  };
+  Router::new().route("/", post(create::handle).delete(delete::handle)).with_state(state)
 }
