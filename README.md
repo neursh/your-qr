@@ -10,7 +10,7 @@ You don't need an account to start generating stateless QR code, the site will u
 
 There will be many features that will requires an account to access due to the nature of it (syncing for example). But you can absolutely use some of it without an account, but it will be active only for a short time.
 
-Your account password will be hashed using scrypt (argon be really heavy ToT), and the data is going to be encrypted using AES-256.
+Your account password will be hashed using Argon2id, and the data is going to be encrypted using AES-256.
 
 For stateless QR, data stored on the server will be **forcefully** encrypted, and you will need to setup a master password to unlock it, the master password will stay on your browser. You might say it's kinda unnecessary because the QR will not be encrypted, why bother? Well idk, maybe the QR is used on-site, and it's not supposed to be known other than that.
 
