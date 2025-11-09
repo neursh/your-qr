@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{ sync::Arc, thread };
 
 use argon2::{ Argon2, PasswordHash, PasswordVerifier };
 use tokio::sync::{ Mutex, mpsc, oneshot };
@@ -10,32 +10,32 @@ pub struct VerifyPassRequest {
 }
 
 pub fn launch(
-  rx: mpsc::Receiver<(VerifyPassRequest, oneshot::Sender<Option<bool>>)>,
+  rx: mpsc::Receiver<(VerifyPassRequest, Option<oneshot::Sender<Option<bool>>>)>,
   amount: usize
 ) {
   let rx_wraped = Arc::new(Mutex::new(rx));
 
   for _ in 0..amount {
     let rx_branch = rx_wraped.clone();
-    tokio::task::spawn_blocking(|| { worker(rx_branch) });
+    thread::spawn(|| { worker(rx_branch) });
   }
 }
 
-fn worker(rx: Arc<Mutex<mpsc::Receiver<(VerifyPassRequest, oneshot::Sender<Option<bool>>)>>>) {
+fn worker(
+  rx: Arc<Mutex<mpsc::Receiver<(VerifyPassRequest, Option<oneshot::Sender<Option<bool>>>)>>>
+) {
   let argon2 = Argon2::default();
   loop {
-    let retrieve = { rx.blocking_lock().blocking_recv() };
-    if let Some(request) = retrieve {
-      if let Ok(hash) = PasswordHash::new(&request.0.hash) {
-        let _ = request.1.send(
-          Some(argon2.verify_password(request.0.password.as_bytes(), &hash).is_ok())
-        );
-      } else {
-        let _ = request.1.send(None);
+    let retrieve = { rx.blocking_lock().blocking_recv().unwrap() };
+    if let (request, Some(sender)) = retrieve {
+      match PasswordHash::new(&request.hash) {
+        Ok(hash) => {
+          let _ = sender.send(Some(argon2.verify_password(request.password.as_bytes(), &hash).is_ok()));
+        }
+        Err(_) => {
+          let _ = sender.send(None);
+        }
       }
-    } else {
-      // Something went wrong on the server, so just go ahead and crash ;)
-      break;
     }
   }
 }
